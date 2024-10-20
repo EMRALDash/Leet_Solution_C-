@@ -1,0 +1,49 @@
+#include <stack>
+#include <string>
+using namespace std;
+
+class Solution {
+public:
+    bool parseBoolExpr(string expression) {
+        stack<char> stk;  // Stack to hold the operators and operands
+        
+        for (char c : expression) {
+            if (c == ')') {
+                // Evaluate the sub-expression when encountering ')'
+                char result = 't';  // Temporary result, assume true for now
+                bool hasTrue = false, hasFalse = false;
+                
+                // Process the sub-expression until we find '('
+                while (stk.top() != '(') {
+                    char operand = stk.top();
+                    stk.pop();
+                    if (operand == 't') hasTrue = true;
+                    if (operand == 'f') hasFalse = true;
+                }
+                stk.pop();  // Pop '('
+
+                char op = stk.top();  // Get the operator
+                stk.pop();  // Pop the operator
+
+                if (op == '&') {
+                    result = hasFalse ? 'f' : 't';  // AND: If there's any false, result is false
+                } else if (op == '|') {
+                    result = hasTrue ? 't' : 'f';  // OR: If there's any true, result is true
+                } else if (op == '!') {
+                    result = hasTrue ? 'f' : 't';  // NOT: Negate the single operand
+                }
+
+                stk.push(result);  // Push the evaluated result back onto the stack
+            }
+            else if (c != ',' && c != '(') {
+                // Push everything except ',' and '(' onto the stack
+                stk.push(c);
+            }
+            else if (c == '(') {
+                stk.push(c);  // We still need to push '(' to mark start of a subexpression
+            }
+        }
+
+        return stk.top() == 't';  // Final result is at the top of the stack
+    }
+};
