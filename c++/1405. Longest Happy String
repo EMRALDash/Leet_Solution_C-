@@ -1,0 +1,37 @@
+#include <string>
+using namespace std;
+
+class Solution {
+ public:
+  string longestDiverseString(int a, int b, int c) {
+    string result;
+    makeHappyString(result, a, b, c, 'a', 'b', 'c');
+    return result;
+  }
+
+ private:
+  void makeHappyString(string& result, int a, int b, int c, char A, char B, char C) {
+    // Ensure a >= b >= c
+    if (a < b)
+      return makeHappyString(result, b, a, c, B, A, C);
+    if (b < c)
+      return makeHappyString(result, a, c, b, A, C, B);
+    
+    // Base case: when b == 0, we can only use the remaining A's
+    if (b == 0) {
+      result += string(min(a, 2), A);
+      return;
+    }
+
+    // Use as many A's as possible (max 2 to avoid consecutive)
+    int useA = min(a, 2);
+    result += string(useA, A);
+
+    // Use 1 B if possible
+    int useB = (a - useA >= b) ? 1 : 0;
+    result += string(useB, B);
+
+    // Recursively add the remaining characters
+    makeHappyString(result, a - useA, b - useB, c, A, B, C);
+  }
+};
